@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ kategori_adi }} Quiz – DevGuide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        :root { --primary: #6C63FF; --accent: #00D4AA; --card-bg: #161628; --sidebar-w: 240px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Space Grotesk', sans-serif; background: #0A0A18; color: #E8E8F0; display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; padding: 1.5rem 0; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+        .sidebar-brand { font-size: 1.3rem; font-weight: 700; color: #fff; text-decoration: none; padding: 0 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; display: block; }
+        .sidebar-brand span { color: var(--accent); }
+        .sidebar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #555570; padding: 0 0.75rem; margin: 1rem 0 0.4rem; }
+        .sidebar-section { padding: 0 0.75rem; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 0.55rem 0.75rem; border-radius: 8px; color: #8B8BA7; text-decoration: none; font-size: 0.9rem; transition: all 0.15s; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(108,99,255,0.12); color: #E8E8F0; }
+        .sidebar-link.active { color: var(--primary); font-weight: 500; }
+        .sidebar-link i { font-size: 1rem; width: 18px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding: 1rem 0.75rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .main { margin-left: var(--sidebar-w); flex: 1; padding: 2rem; max-width: calc(100% - var(--sidebar-w)); }
+        .quiz-header { background: var(--card-bg); border: 1px solid rgba(108,99,255,0.2); border-radius: 14px; padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; position: relative; overflow: hidden; }
+        .quiz-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+        .quiz-title { font-size: 1.2rem; font-weight: 700; }
+        .quiz-count { font-size: 0.85rem; color: #8B8BA7; }
+        .soru-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 1.75rem; margin-bottom: 1.25rem; }
+        .soru-no { font-size: 0.75rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; font-family: 'Space Grotesk', monospace; }
+        .soru-text { font-size: 1rem; font-weight: 600; color: #E8E8F0; line-height: 1.5; margin-bottom: 1.25rem; }
+        .secenekler { display: flex; flex-direction: column; gap: 0.6rem; }
+        .secenek-label { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; }
+        .secenek-label:hover { border-color: rgba(108,99,255,0.35); background: rgba(108,99,255,0.08); }
+        .secenek-label input[type=radio] { display: none; }
+        .secenek-label input[type=radio]:checked + .secenek-harf { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .secenek-label:has(input:checked) { border-color: rgba(108,99,255,0.4); background: rgba(108,99,255,0.1); }
+        .secenek-harf { width: 28px; height: 28px; min-width: 28px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; color: #8B8BA7; transition: all 0.15s; }
+        .secenek-metin { font-size: 0.9rem; color: #C8C8DC; }
+        .btn-bitir { background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 0.85rem 2.5rem; font-size: 1rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all 0.2s; display: block; width: 100%; margin-top: 1.5rem; }
+        .btn-bitir:hover { background: #5A52D5; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(108,99,255,0.3); }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <a href="{% url 'landing' %}" class="sidebar-brand">Dev<span>Guide</span></a>
+
+    {% if request.user.profile.role == 'mentor' %}
+        <span class="rol-badge mentor"><i class="bi bi-star-fill"></i> Mentor</span>
+    {% else %}
+        <span class="rol-badge"><i class="bi bi-mortarboard-fill"></i> Öğrenci</span>
+    {% endif %}
+
+    <div class="sidebar-label">Ana</div>
+    <div class="sidebar-section">
+        <a href="{% url 'dashboard' %}" class="sidebar-link">
+            <i class="bi bi-grid-1x2"></i> Dashboard
+        </a>
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-person"></i> Profilim
+        </a>
+    </div>
+
+    <div class="sidebar-label">Eğitim</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modüllerim
+            </a>
+        {% else %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modül Takibi
+            </a>
+        {% endif %}
+        <a href="{% url 'blog_liste' %}" class="sidebar-link">
+            <i class="bi bi-book"></i> Blog
+        </a>
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Gelişim Günlüğü
+            </a>
+        {% else %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Günlük Takibi
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="sidebar-label">Mentorluk</div>
+    <div class="sidebar-section">
+        <a href="{% url 'mentor_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Mentorler
+        </a>
+        <a href="{% url 'talep_yonet' %}" class="sidebar-link">
+            <i class="bi bi-person-check"></i>
+            {% if request.user.profile.role == 'mentor' %}Öğrenci Talepleri{% else %}Taleplerim{% endif %}
+        </a>
+        <a href="{% url 'randevu_liste' %}" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Randevular
+        </a>
+        <a href="{% url 'takvim' %}" class="sidebar-link">
+            <i class="bi bi-calendar3"></i> Takvim
+        </a>
+        <a href="{% url 'sohbet_liste' %}" class="sidebar-link">
+            <i class="bi bi-chat-dots"></i> Mesajlar
+        </a>
+        {% if request.user.profile.role == 'mentor' %}
+            <a href="{% url 'ogrenci_listesi' %}" class="sidebar-link">
+                <i class="bi bi-mortarboard"></i> Öğrencilerim
+            </a>
+        {% endif %}
+        <a href="{% url 'patika_liste' %}" class="sidebar-link">
+            <i class="bi bi-map"></i> Patikalar
+        </a>
+    </div>
+
+    <div class="sidebar-label">Topluluk</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'quiz_kategori' %}" class="sidebar-link">
+                <i class="bi bi-controller"></i> Quiz
+            </a>
+        {% endif %}
+        <a href="{% url 'leaderboard' %}" class="sidebar-link">
+            <i class="bi bi-trophy"></i> Liderlik Tablosu
+        </a>
+        <a href="{% url 'kulup_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Forum & Kulüpler
+        </a>
+    </div>
+
+    <div class="sidebar-label">Entegrasyon</div>
+    <div class="sidebar-section">
+        <a href="{% url 'github_profil' %}" class="sidebar-link">
+            <i class="bi bi-github"></i> GitHub
+        </a>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-gear"></i> Ayarlar
+        </a>
+        <a href="{% url 'cikis' %}" class="sidebar-link" style="color:#FF6B6B;">
+            <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+        </a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="quiz-header">
+        <div>
+            <div class="quiz-title">🎮 {{ kategori_adi }} Quiz</div>
+            <div class="quiz-count">{{ sorular|length }} soru · Tüm soruları cevapla ve gönder</div>
+        </div>
+        <a href="{% url 'quiz_kategori' %}" style="font-size:0.85rem; color:#8B8BA7; text-decoration:none;">
+            <i class="bi bi-arrow-left me-1"></i>Kategorilere Dön
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for soru in sorular %}
+        <div class="soru-card">
+            <div class="soru-no">Soru {{ forloop.counter }} / {{ sorular|length }}</div>
+            <div class="soru-text">{{ soru.soru }}</div>
+            <div class="secenekler">
+                <label class="secenek-label">
+                    <input type="radio" name="soru_{{ soru.pk }}" value="A" required>
+                    <span class="secenek-harf">A</span>
+                    <span class="secenek-metin">{{ soru.secenek_a }}</span>
+                </label>
+                <label class="secenek-label">
+                    <input type="radio" name="soru_{{ soru.pk }}" value="B">
+                    <span class="secenek-harf">B</span>
+                    <span class="secenek-metin">{{ soru.secenek_b }}</span>
+                </label>
+                <label class="secenek-label">
+                    <input type="radio" name="soru_{{ soru.pk }}" value="C">
+                    <span class="secenek-harf">C</span>
+                    <span class="secenek-metin">{{ soru.secenek_c }}</span>
+                </label>
+                <label class="secenek-label">
+                    <input type="radio" name="soru_{{ soru.pk }}" value="D">
+                    <span class="secenek-harf">D</span>
+                    <span class="secenek-metin">{{ soru.secenek_d }}</span>
+                </label>
+            </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-bitir">
+            <i class="bi bi-check-circle me-2"></i>Quizi Bitir ve Skoru Gör
+        </button>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

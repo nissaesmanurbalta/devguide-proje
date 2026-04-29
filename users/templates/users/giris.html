@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap – DevGuide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        :root { --primary: #6C63FF; --accent: #00D4AA; --dark: #0D0D1A; --card-bg: #161628; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--dark); color: #E8E8F0; min-height: 100vh; display: flex; align-items: center; }
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(108,99,255,0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .brand { font-size: 1.4rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .brand span { color: var(--accent); }
+        .auth-title { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.25rem; }
+        .auth-sub { color: #8B8BA7; font-size: 0.9rem; margin-bottom: 2rem; }
+        .form-label { font-size: 0.88rem; font-weight: 500; color: #C8C8DC; margin-bottom: 0.4rem; }
+        .form-control {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #E8E8F0;
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .form-control:focus {
+            background: rgba(108,99,255,0.08);
+            border-color: var(--primary);
+            color: #E8E8F0;
+            box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+        }
+        .btn-giris {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-giris:hover { background: #5A52D5; transform: translateY(-1px); }
+        .divider { color: #8B8BA7; text-align: center; margin: 1.25rem 0; font-size: 0.85rem; position: relative; }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%; width: 40%;
+            height: 1px; background: rgba(255,255,255,0.08);
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        .link-muted { color: #8B8BA7; font-size: 0.88rem; text-decoration: none; }
+        .link-muted span { color: var(--primary); font-weight: 500; }
+        .link-muted:hover span { text-decoration: underline; }
+        .alert-danger { background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.2); color: #FF8080; border-radius: 10px; font-size: 0.88rem; }
+        .back-link { color: #8B8BA7; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="auth-card">
+        <a href="{% url 'landing' %}" class="back-link"><i class="bi bi-arrow-left"></i> Ana Sayfa</a>
+        <a href="{% url 'landing' %}" class="brand">Dev<span>Guide</span></a>
+        <h2 class="auth-title">Tekrar hoş geldin 👋</h2>
+        <p class="auth-sub">Hesabına giriş yap ve kaldığın yerden devam et.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="username" class="form-control" placeholder="kullaniciadi" required autofocus>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Şifre</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-giris">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+            </button>
+        </form>
+
+        <div class="divider">veya</div>
+        <div class="text-center">
+            <a href="{% url 'kayit' %}" class="link-muted">
+                Hesabın yok mu? <span>Kayıt Ol</span>
+            </a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol – DevGuide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        :root { --primary: #6C63FF; --accent: #00D4AA; --dark: #0D0D1A; --card-bg: #161628; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--dark); color: #E8E8F0; min-height: 100vh; display: flex; align-items: center; padding: 2rem 0; }
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(108,99,255,0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+        .brand { font-size: 1.4rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .brand span { color: var(--accent); }
+        .auth-title { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.25rem; }
+        .auth-sub { color: #8B8BA7; font-size: 0.9rem; margin-bottom: 2rem; }
+        .form-label { font-size: 0.88rem; font-weight: 500; color: #C8C8DC; margin-bottom: 0.4rem; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #E8E8F0;
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .form-select option { background: #1a1a30; }
+        .form-control:focus, .form-select:focus { background: rgba(108,99,255,0.08); border-color: var(--primary); color: #E8E8F0; box-shadow: 0 0 0 3px rgba(108,99,255,0.15); }
+        .rol-secim { display: flex; gap: 10px; }
+        .rol-btn { flex: 1; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.75rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .rol-btn:hover { border-color: var(--primary); }
+        .rol-btn input[type=radio] { display: none; }
+        .rol-btn.active { border-color: var(--primary); background: rgba(108,99,255,0.12); }
+        .rol-btn .rol-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+        .rol-btn .rol-label { font-size: 0.88rem; font-weight: 500; color: #C8C8DC; }
+        .btn-kayit { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 0.75rem; font-size: 1rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; width: 100%; transition: all 0.2s; }
+        .btn-kayit:hover { background: #5A52D5; transform: translateY(-1px); }
+        .errorlist { list-style: none; padding: 0; margin: 4px 0 0; }
+        .errorlist li { color: #FF8080; font-size: 0.82rem; }
+        .alert-danger { background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.2); color: #FF8080; border-radius: 10px; font-size: 0.88rem; }
+        .link-muted { color: #8B8BA7; font-size: 0.88rem; text-decoration: none; }
+        .link-muted span { color: var(--primary); font-weight: 500; }
+        .back-link { color: #8B8BA7; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #fff; }
+        .divider { color: #8B8BA7; text-align: center; margin: 1.25rem 0; font-size: 0.85rem; position: relative; }
+        .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(255,255,255,0.08); }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="auth-card">
+        <a href="{% url 'landing' %}" class="back-link"><i class="bi bi-arrow-left"></i> Ana Sayfa</a>
+        <a href="{% url 'landing' %}" class="brand">Dev<span>Guide</span></a>
+        <h2 class="auth-title">Hesap oluştur 🚀</h2>
+        <p class="auth-sub">Topluluğa katıl, öğrenmeye başla.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="kayitForm">
+            {% csrf_token %}
+
+            <!-- ROL SEÇİMİ -->
+            <div class="mb-3">
+                <label class="form-label">Ben bir...</label>
+                <div class="rol-secim">
+                    <label class="rol-btn active" id="btnStudent">
+                        <input type="radio" name="role" value="student" checked>
+                        <span class="rol-icon">🎓</span>
+                        <span class="rol-label">Öğrenciyim</span>
+                    </label>
+                    <label class="rol-btn" id="btnMentor">
+                        <input type="radio" name="role" value="mentor">
+                        <span class="rol-icon">🧑‍🏫</span>
+                        <span class="rol-label">Mentorüm</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label">Ad</label>
+                    <input type="text" name="first_name" class="form-control" placeholder="Adın" required>
+                    {% if form.first_name.errors %}<ul class="errorlist">{% for e in form.first_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Soyad</label>
+                    <input type="text" name="last_name" class="form-control" placeholder="Soyadın" required>
+                </div>
+            </div>
+
+            <div class="mb-3 mt-3">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="username" class="form-control" placeholder="kullaniciadi" required>
+                {% if form.username.errors %}<ul class="errorlist">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">E-posta</label>
+                <input type="email" name="email" class="form-control" placeholder="ornek@email.com" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Şifre</label>
+                <input type="password" name="password1" class="form-control" placeholder="En az 8 karakter" required>
+                {% if form.password1.errors %}<ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Şifre Tekrar</label>
+                <input type="password" name="password2" class="form-control" placeholder="Şifreni tekrar gir" required>
+                {% if form.password2.errors %}<ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <button type="submit" class="btn-kayit">
+                <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+            </button>
+        </form>
+
+        <div class="divider">veya</div>
+        <div class="text-center">
+            <a href="{% url 'giris' %}" class="link-muted">
+                Zaten hesabın var mı? <span>Giriş Yap</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('btnStudent').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('btnMentor').classList.remove('active');
+    });
+    document.getElementById('btnMentor').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('btnStudent').classList.remove('active');
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liderlik Tablosu – DevGuide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        :root { --primary: #6C63FF; --accent: #00D4AA; --card-bg: #161628; --sidebar-w: 240px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Space Grotesk', sans-serif; background: #0A0A18; color: #E8E8F0; display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; padding: 1.5rem 0; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+        .sidebar-brand { font-size: 1.3rem; font-weight: 700; color: #fff; text-decoration: none; padding: 0 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; display: block; }
+        .sidebar-brand span { color: var(--accent); }
+        .sidebar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #555570; padding: 0 0.75rem; margin: 1rem 0 0.4rem; }
+        .sidebar-section { padding: 0 0.75rem; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 0.55rem 0.75rem; border-radius: 8px; color: #8B8BA7; text-decoration: none; font-size: 0.9rem; transition: all 0.15s; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(108,99,255,0.12); color: #E8E8F0; }
+        .sidebar-link.active { color: var(--primary); font-weight: 500; }
+        .sidebar-link i { font-size: 1rem; width: 18px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding: 1rem 0.75rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .rol-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); color: var(--primary); border-radius: 50px; padding: 0.2rem 0.75rem; font-size: 0.75rem; font-weight: 500; margin: 0 1.25rem 1rem; }
+        .rol-badge.mentor { background: rgba(0,212,170,0.12); border-color: rgba(0,212,170,0.3); color: var(--accent); }
+        .main { margin-left: var(--sidebar-w); flex: 1; padding: 2rem; max-width: calc(100% - var(--sidebar-w)); }
+        .page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .page-sub { color: #8B8BA7; font-size: 0.88rem; margin-bottom: 2rem; }
+
+        /* PODİUM */
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
+        .podium-item { text-align: center; flex: 1; max-width: 160px; }
+        .podium-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0 auto 0.5rem; }
+        .podium-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .podium-skor { font-size: 0.75rem; color: #8B8BA7; margin-bottom: 0.5rem; }
+        .podium-bar { border-radius: 8px 8px 0 0; width: 100%; }
+        .podium-1 .podium-bar { height: 100px; background: linear-gradient(180deg, #FFD700, #FFA500); }
+        .podium-2 .podium-bar { height: 70px; background: linear-gradient(180deg, #C0C0C0, #A0A0A0); }
+        .podium-3 .podium-bar { height: 50px; background: linear-gradient(180deg, #CD7F32, #A0522D); }
+        .podium-1 .podium-avatar { background: linear-gradient(135deg, #FFD700, #FFA500); width: 60px; height: 60px; font-size: 1.3rem; }
+        .podium-rozet { font-size: 1.4rem; margin-bottom: 0.25rem; }
+
+        /* TABLO */
+        .lider-tablo { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; }
+        .tablo-header { display: grid; grid-template-columns: 60px 1fr 100px; padding: 0.75rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #555570; }
+        .tablo-row { display: grid; grid-template-columns: 60px 1fr 100px; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; transition: background 0.15s; }
+        .tablo-row:last-child { border-bottom: none; }
+        .tablo-row:hover { background: rgba(255,255,255,0.02); }
+        .tablo-row.benim { background: rgba(108,99,255,0.08); border-left: 3px solid var(--primary); }
+        .sira { font-size: 0.9rem; font-weight: 700; color: #555570; }
+        .sira.bir { color: #FFD700; }
+        .sira.iki { color: #C0C0C0; }
+        .sira.uc { color: #CD7F32; }
+        .kullanici { display: flex; align-items: center; gap: 10px; }
+        .kul-avatar { width: 34px; height: 34px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: #fff; min-width: 34px; }
+        .kul-isim { font-size: 0.9rem; font-weight: 500; }
+        .kul-username { font-size: 0.75rem; color: #8B8BA7; }
+        .puan { font-size: 1rem; font-weight: 700; color: var(--primary); text-align: right; }
+
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state h5 { font-weight: 600; margin-bottom: 0.5rem; }
+        .empty-state p { color: #8B8BA7; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .btn-quiz { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 0.6rem 1.4rem; font-weight: 600; font-size: 0.9rem; font-family: 'Space Grotesk', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-quiz:hover { background: #5A52D5; color: #fff; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <a href="{% url 'landing' %}" class="sidebar-brand">Dev<span>Guide</span></a>
+
+    {% if request.user.profile.role == 'mentor' %}
+        <span class="rol-badge mentor"><i class="bi bi-star-fill"></i> Mentor</span>
+    {% else %}
+        <span class="rol-badge"><i class="bi bi-mortarboard-fill"></i> Öğrenci</span>
+    {% endif %}
+
+    <div class="sidebar-label">Ana</div>
+    <div class="sidebar-section">
+        <a href="{% url 'dashboard' %}" class="sidebar-link">
+            <i class="bi bi-grid-1x2"></i> Dashboard
+        </a>
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-person"></i> Profilim
+        </a>
+    </div>
+
+    <div class="sidebar-label">Eğitim</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modüllerim
+            </a>
+        {% else %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modül Takibi
+            </a>
+        {% endif %}
+        <a href="{% url 'blog_liste' %}" class="sidebar-link">
+            <i class="bi bi-book"></i> Blog
+        </a>
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Gelişim Günlüğü
+            </a>
+        {% else %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Günlük Takibi
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="sidebar-label">Mentorluk</div>
+    <div class="sidebar-section">
+        <a href="{% url 'mentor_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Mentorler
+        </a>
+        <a href="{% url 'talep_yonet' %}" class="sidebar-link">
+            <i class="bi bi-person-check"></i>
+            {% if request.user.profile.role == 'mentor' %}Öğrenci Talepleri{% else %}Taleplerim{% endif %}
+        </a>
+        <a href="{% url 'randevu_liste' %}" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Randevular
+        </a>
+        <a href="{% url 'takvim' %}" class="sidebar-link">
+            <i class="bi bi-calendar3"></i> Takvim
+        </a>
+        <a href="{% url 'sohbet_liste' %}" class="sidebar-link">
+            <i class="bi bi-chat-dots"></i> Mesajlar
+        </a>
+        {% if request.user.profile.role == 'mentor' %}
+            <a href="{% url 'ogrenci_listesi' %}" class="sidebar-link">
+                <i class="bi bi-mortarboard"></i> Öğrencilerim
+            </a>
+        {% endif %}
+        <a href="{% url 'patika_liste' %}" class="sidebar-link">
+            <i class="bi bi-map"></i> Patikalar
+        </a>
+    </div>
+
+    <div class="sidebar-label">Topluluk</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'quiz_kategori' %}" class="sidebar-link">
+                <i class="bi bi-controller"></i> Quiz
+            </a>
+        {% endif %}
+        <a href="{% url 'leaderboard' %}" class="sidebar-link">
+            <i class="bi bi-trophy"></i> Liderlik Tablosu
+        </a>
+        <a href="{% url 'kulup_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Forum & Kulüpler
+        </a>
+    </div>
+
+    <div class="sidebar-label">Entegrasyon</div>
+    <div class="sidebar-section">
+        <a href="{% url 'github_profil' %}" class="sidebar-link">
+            <i class="bi bi-github"></i> GitHub
+        </a>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-gear"></i> Ayarlar
+        </a>
+        <a href="{% url 'cikis' %}" class="sidebar-link" style="color:#FF6B6B;">
+            <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+        </a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="page-title">🏆 Liderlik Tablosu</div>
+    <div class="page-sub">En yüksek quiz skorlarına göre sıralama</div>
+
+    {% if skorlar %}
+
+        <!-- PODİUM (ilk 3) -->
+        {% if skorlar|length >= 3 %}
+        <div class="podium">
+            <!-- 2. -->
+            <div class="podium-item podium-2">
+                <div class="podium-rozet">🥈</div>
+                <div class="podium-avatar" style="background: linear-gradient(135deg, #C0C0C0, #A0A0A0);">
+                    {{ skorlar.1.user__first_name|first|upper }}{{ skorlar.1.user__last_name|first|upper }}
+                </div>
+                <div class="podium-name">{{ skorlar.1.user__first_name|default:skorlar.1.user__username }}</div>
+                <div class="podium-skor">{{ skorlar.1.en_yuksek }} puan</div>
+                <div class="podium-bar"></div>
+            </div>
+            <!-- 1. -->
+            <div class="podium-item podium-1">
+                <div class="podium-rozet">🥇</div>
+                <div class="podium-avatar">
+                    {{ skorlar.0.user__first_name|first|upper }}{{ skorlar.0.user__last_name|first|upper }}
+                </div>
+                <div class="podium-name">{{ skorlar.0.user__first_name|default:skorlar.0.user__username }}</div>
+                <div class="podium-skor">{{ skorlar.0.en_yuksek }} puan</div>
+                <div class="podium-bar"></div>
+            </div>
+            <!-- 3. -->
+            <div class="podium-item podium-3">
+                <div class="podium-rozet">🥉</div>
+                <div class="podium-avatar" style="background: linear-gradient(135deg, #CD7F32, #A0522D);">
+                    {{ skorlar.2.user__first_name|first|upper }}{{ skorlar.2.user__last_name|first|upper }}
+                </div>
+                <div class="podium-name">{{ skorlar.2.user__first_name|default:skorlar.2.user__username }}</div>
+                <div class="podium-skor">{{ skorlar.2.en_yuksek }} puan</div>
+                <div class="podium-bar"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- TAM TABLO -->
+        <div class="lider-tablo">
+            <div class="tablo-header">
+                <div>Sıra</div>
+                <div>Kullanıcı</div>
+                <div style="text-align:right;">Puan</div>
+            </div>
+            {% for skor in skorlar %}
+            <div class="tablo-row {% if request.user.username == skor.user__username %}benim{% endif %}">
+                <div class="sira {% if forloop.counter == 1 %}bir{% elif forloop.counter == 2 %}iki{% elif forloop.counter == 3 %}uc{% endif %}">
+                    {% if forloop.counter == 1 %}🥇
+                    {% elif forloop.counter == 2 %}🥈
+                    {% elif forloop.counter == 3 %}🥉
+                    {% else %}#{{ forloop.counter }}{% endif %}
+                </div>
+                <div class="kullanici">
+                    <div class="kul-avatar">
+                        {{ skor.user__first_name|first|upper }}{{ skor.user__last_name|first|upper }}
+                    </div>
+                    <div>
+                        <div class="kul-isim">
+                            {{ skor.user__first_name|default:'' }} {{ skor.user__last_name|default:'' }}
+                            {% if not skor.user__first_name %}{{ skor.user__username }}{% endif %}
+                            {% if request.user.username == skor.user__username %}
+                                <span style="font-size:0.72rem; color: var(--primary); font-weight:600;">(Sen)</span>
+                            {% endif %}
+                        </div>
+                        <div class="kul-username">@{{ skor.user__username }}</div>
+                    </div>
+                </div>
+                <div class="puan">{{ skor.en_yuksek }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🏆</div>
+            <h5>Henüz kimse quiz çözmemiş</h5>
+            <p>İlk sıraya sen gir!</p>
+            <a href="{% url 'quiz_kategori' %}" class="btn-quiz">
+                <i class="bi bi-controller"></i> Quiz Çöz
+            </a>
+        </div>
+    {% endif %}
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.baslik }} – DevGuide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        :root { --primary: #6C63FF; --accent: #00D4AA; --card-bg: #161628; --sidebar-w: 240px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Space Grotesk', sans-serif; background: #0A0A18; color: #E8E8F0; display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; padding: 1.5rem 0; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+        .sidebar-brand { font-size: 1.3rem; font-weight: 700; color: #fff; text-decoration: none; padding: 0 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; display: block; }
+        .sidebar-brand span { color: var(--accent); }
+        .sidebar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #555570; padding: 0 0.75rem; margin: 1rem 0 0.4rem; }
+        .sidebar-section { padding: 0 0.75rem; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 0.55rem 0.75rem; border-radius: 8px; color: #8B8BA7; text-decoration: none; font-size: 0.9rem; transition: all 0.15s; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(108,99,255,0.12); color: #E8E8F0; }
+        .sidebar-link.active { color: var(--primary); font-weight: 500; }
+        .sidebar-link i { font-size: 1rem; width: 18px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding: 1rem 0.75rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .main { margin-left: var(--sidebar-w); flex: 1; padding: 2rem; max-width: calc(100% - var(--sidebar-w)); }
+        .back-link { color: #8B8BA7; text-decoration: none; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #E8E8F0; }
+
+        /* POST KARTI */
+        .post-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 2rem; margin-bottom: 1.5rem; display: flex; gap: 1.25rem; }
+        .vote-col { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 44px; }
+        .btn-begen { background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: all 0.15s; text-decoration: none; color: #8B8BA7; }
+        .btn-begen:hover { border-color: var(--primary); color: var(--primary); background: rgba(108,99,255,0.1); }
+        .btn-begen.begendim { border-color: var(--primary); color: var(--primary); background: rgba(108,99,255,0.12); }
+        .vote-count { font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .post-body { flex: 1; }
+        .post-kulup-badge { font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 4px; }
+        .post-baslik { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 0.75rem; line-height: 1.2; }
+        .post-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: #555570; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .post-icerik { font-size: 0.95rem; color: #C8C8DC; line-height: 1.75; white-space: pre-wrap; }
+        .post-actions { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; }
+        .btn-sil-post { background: rgba(255,107,107,0.1); color: #FF6B6B; border: 1px solid rgba(255,107,107,0.2); border-radius: 8px; padding: 0.4rem 1rem; font-size: 0.82rem; font-weight: 500; font-family: 'Space Grotesk', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+
+        /* YORUM BÖLÜMÜ */
+        .yorumlar-title { font-size: 1rem; font-weight: 600; color: #8B8BA7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+        .yorum-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.25rem; margin-bottom: 0.75rem; display: flex; gap: 1rem; }
+        .yorum-vote { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 36px; }
+        .btn-yorum-begen { background: transparent; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; text-decoration: none; color: #8B8BA7; }
+        .btn-yorum-begen:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-yorum-begen.begendim { border-color: var(--accent); color: var(--accent); background: rgba(0,212,170,0.08); }
+        .yorum-vote-count { font-size: 0.82rem; font-weight: 700; color: var(--accent); }
+        .yorum-body { flex: 1; }
+        .yorum-meta { display: flex; gap: 10px; font-size: 0.75rem; color: #555570; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .yorum-yazar { font-weight: 600; color: #8B8BA7; }
+        .yorum-icerik { font-size: 0.9rem; color: #C8C8DC; line-height: 1.6; }
+
+        /* YORUM FORMU */
+        .yorum-form-card { background: var(--card-bg); border: 1px solid rgba(108,99,255,0.15); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+        .yorum-form-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: #C8C8DC; }
+        .form-control-custom { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #E8E8F0; border-radius: 10px; padding: 0.65rem 1rem; font-family: 'Space Grotesk', sans-serif; font-size: 0.92rem; outline: none; resize: vertical; transition: all 0.15s; }
+        .form-control-custom:focus { border-color: var(--primary); background: rgba(108,99,255,0.07); box-shadow: 0 0 0 3px rgba(108,99,255,0.12); }
+        .btn-yorum-gonder { background: var(--primary); color: #fff; border: none; border-radius: 9px; padding: 0.6rem 1.4rem; font-weight: 600; font-size: 0.9rem; font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-yorum-gonder:hover { background: #5A52D5; }
+
+        .alert-error-custom { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); color: #FF6B6B; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.88rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <a href="{% url 'landing' %}" class="sidebar-brand">Dev<span>Guide</span></a>
+
+    {% if request.user.profile.role == 'mentor' %}
+        <span class="rol-badge mentor"><i class="bi bi-star-fill"></i> Mentor</span>
+    {% else %}
+        <span class="rol-badge"><i class="bi bi-mortarboard-fill"></i> Öğrenci</span>
+    {% endif %}
+
+    <div class="sidebar-label">Ana</div>
+    <div class="sidebar-section">
+        <a href="{% url 'dashboard' %}" class="sidebar-link">
+            <i class="bi bi-grid-1x2"></i> Dashboard
+        </a>
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-person"></i> Profilim
+        </a>
+    </div>
+
+    <div class="sidebar-label">Eğitim</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modüllerim
+            </a>
+        {% else %}
+            <a href="{% url 'modul_liste' %}" class="sidebar-link">
+                <i class="bi bi-journal-code"></i> Modül Takibi
+            </a>
+        {% endif %}
+        <a href="{% url 'blog_liste' %}" class="sidebar-link">
+            <i class="bi bi-book"></i> Blog
+        </a>
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Gelişim Günlüğü
+            </a>
+        {% else %}
+            <a href="{% url 'gunluk_liste' %}" class="sidebar-link">
+                <i class="bi bi-pencil-square"></i> Günlük Takibi
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="sidebar-label">Mentorluk</div>
+    <div class="sidebar-section">
+        <a href="{% url 'mentor_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Mentorler
+        </a>
+        <a href="{% url 'talep_yonet' %}" class="sidebar-link">
+            <i class="bi bi-person-check"></i>
+            {% if request.user.profile.role == 'mentor' %}Öğrenci Talepleri{% else %}Taleplerim{% endif %}
+        </a>
+        <a href="{% url 'randevu_liste' %}" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Randevular
+        </a>
+        <a href="{% url 'takvim' %}" class="sidebar-link">
+            <i class="bi bi-calendar3"></i> Takvim
+        </a>
+        <a href="{% url 'sohbet_liste' %}" class="sidebar-link">
+            <i class="bi bi-chat-dots"></i> Mesajlar
+        </a>
+        {% if request.user.profile.role == 'mentor' %}
+            <a href="{% url 'ogrenci_listesi' %}" class="sidebar-link">
+                <i class="bi bi-mortarboard"></i> Öğrencilerim
+            </a>
+        {% endif %}
+        <a href="{% url 'patika_liste' %}" class="sidebar-link">
+            <i class="bi bi-map"></i> Patikalar
+        </a>
+    </div>
+
+    <div class="sidebar-label">Topluluk</div>
+    <div class="sidebar-section">
+        {% if request.user.profile.role == 'student' %}
+            <a href="{% url 'quiz_kategori' %}" class="sidebar-link">
+                <i class="bi bi-controller"></i> Quiz
+            </a>
+        {% endif %}
+        <a href="{% url 'leaderboard' %}" class="sidebar-link">
+            <i class="bi bi-trophy"></i> Liderlik Tablosu
+        </a>
+        <a href="{% url 'kulup_liste' %}" class="sidebar-link">
+            <i class="bi bi-people"></i> Forum & Kulüpler
+        </a>
+    </div>
+
+    <div class="sidebar-label">Entegrasyon</div>
+    <div class="sidebar-section">
+        <a href="{% url 'github_profil' %}" class="sidebar-link">
+            <i class="bi bi-github"></i> GitHub
+        </a>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'profil' %}" class="sidebar-link">
+            <i class="bi bi-gear"></i> Ayarlar
+        </a>
+        <a href="{% url 'cikis' %}" class="sidebar-link" style="color:#FF6B6B;">
+            <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+        </a>
+    </div>
+</aside>
+
+<main class="main">
+    <a href="{% url 'kulup_detay' post.kulup.pk %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> {{ post.kulup.ad }}'e Dön
+    </a>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-error-custom"><i class="bi bi-exclamation-circle me-2"></i>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- POST -->
+    <div class="post-card">
+        <div class="vote-col">
+            <a href="{% url 'post_begen' post.pk %}"
+               class="btn-begen {% if begendim %}begendim{% endif %}"
+               title="{% if begendim %}Beğeniyi Geri Al{% else %}Beğen{% endif %}">
+                <i class="bi bi-arrow-up"></i>
+            </a>
+            <div class="vote-count">{{ post.begeni_sayisi }}</div>
+        </div>
+        <div class="post-body">
+            <div class="post-kulup-badge">
+                <i class="bi bi-people-fill"></i> {{ post.kulup.ad }}
+            </div>
+            <div class="post-baslik">{{ post.baslik }}</div>
+            <div class="post-meta">
+                <span><i class="bi bi-person"></i> {{ post.yazar.get_full_name|default:post.yazar.username }}</span>
+                <span><i class="bi bi-clock"></i> {{ post.created_at|date:"d M Y, H:i" }}</span>
+                <span><i class="bi bi-chat"></i> {{ post.yorum_sayisi }} yorum</span>
+            </div>
+            <div class="post-icerik">{{ post.icerik }}</div>
+            {% if request.user == post.yazar %}
+            <div class="post-actions">
+                <a href="{% url 'post_sil' post.pk %}" class="btn-sil-post">
+                    <i class="bi bi-trash"></i> Sil
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- YORUMLAR -->
+    <div class="yorumlar-title">{{ yorumlar.count }} Yorum</div>
+
+    {% for yorum in yorumlar %}
+    <div class="yorum-card">
+        <div class="yorum-vote">
+            <a href="{% url 'yorum_begen' yorum.pk %}"
+               class="btn-yorum-begen {% if request.user in yorum.begeniler.all %}begendim{% endif %}"
+               title="Beğen">
+                <i class="bi bi-hand-thumbs-up"></i>
+            </a>
+            <div class="yorum-vote-count">{{ yorum.begeni_sayisi }}</div>
+        </div>
+        <div class="yorum-body">
+            <div class="yorum-meta">
+                <span class="yorum-yazar">{{ yorum.yazar.get_full_name|default:yorum.yazar.username }}</span>
+                <span>{{ yorum.created_at|date:"d M Y, H:i" }}</span>
+            </div>
+            <div class="yorum-icerik">{{ yorum.icerik }}</div>
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center; padding: 2rem; color: #555570; font-size:0.9rem;">
+        <i class="bi bi-chat-square" style="font-size:1.5rem; display:block; margin-bottom:0.5rem;"></i>
+        Henüz yorum yok. İlk yorumu sen yap!
+    </div>
+    {% endfor %}
+
+    <!-- YORUM FORMU -->
+    <div class="yorum-form-card">
+        <div class="yorum-form-title">💬 Yorum Ekle</div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.icerik }}
+            <button type="submit" class="btn-yorum-gonder">
+                <i class="bi bi-send"></i> Gönder
+            </button>
+        </form>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

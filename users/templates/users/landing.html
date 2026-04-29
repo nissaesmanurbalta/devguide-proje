@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGuide – Yazılım Öğrenme ve Mentorluk Platformu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --accent: #00D4AA;
+            --dark: #0D0D1A;
+            --card-bg: #161628;
+            --text-muted: #8B8BA7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--dark);
+            color: #E8E8F0;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(13,13,26,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(108,99,255,0.15);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff !important;
+            letter-spacing: -0.5px;
+        }
+        .navbar-brand span { color: var(--accent); }
+        .nav-btn {
+            border: 1px solid rgba(108,99,255,0.4);
+            color: #E8E8F0 !important;
+            border-radius: 8px;
+            padding: 0.4rem 1.2rem !important;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--primary); border-color: var(--primary); }
+        .nav-btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff !important;
+        }
+        .nav-btn-primary:hover { background: var(--primary-dark); }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px; left: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; right: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,212,170,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.3);
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            font-family: 'Fira Code', monospace;
+        }
+        .hero-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 500px;
+            margin-bottom: 2rem;
+        }
+        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-primary-custom {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s;
+        }
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108,99,255,0.35);
+        }
+        .btn-outline-custom {
+            background: transparent;
+            color: #E8E8F0;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 0.75rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: 'Space Grotesk', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s;
+        }
+        .btn-outline-custom:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: rgba(108,99,255,0.08);
+        }
+
+        /* KOD KARTI (hero sağ) */
+        .code-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(108,99,255,0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .code-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background: #FF5F57; }
+        .dot-yellow { background: #FFBD2E; }
+        .dot-green { background: #28C840; }
+        .code-filename { color: var(--text-muted); font-size: 0.78rem; margin-left: auto; }
+        .code-line { margin: 0.3rem 0; }
+        .kw { color: #C792EA; }
+        .fn { color: #82AAFF; }
+        .str { color: #C3E88D; }
+        .cm { color: #546E7A; font-style: italic; }
+        .acc { color: var(--accent); }
+
+        /* ÖZELLİKLER */
+        .features { padding: 6rem 0; }
+        .section-label {
+            font-family: 'Fira Code', monospace;
+            color: var(--accent);
+            font-size: 0.82rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.75rem;
+        }
+        .section-sub {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 3rem;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 1.75rem;
+            height: 100%;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            border-color: rgba(108,99,255,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        .feature-icon {
+            width: 48px; height: 48px;
+            background: rgba(108,99,255,0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .feature-card h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* NASIL ÇALIŞIR */
+        .how-it-works { padding: 6rem 0; background: rgba(255,255,255,0.01); }
+        .step-card {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+        .step-num {
+            width: 40px; height: 40px;
+            min-width: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .step-card h6 { font-weight: 600; margin-bottom: 0.25rem; }
+        .step-card p { color: var(--text-muted); font-size: 0.88rem; margin: 0; line-height: 1.5; }
+
+        /* ROL KARTLARI */
+        .roles { padding: 6rem 0; }
+        .role-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .role-card:hover { border-color: rgba(108,99,255,0.4); }
+        .role-card.mentor-card:hover { border-color: rgba(0,212,170,0.4); }
+        .role-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .role-card h4 { font-weight: 700; margin-bottom: 0.5rem; }
+        .role-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .role-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+        .role-feature i { color: var(--accent); font-size: 0.8rem; }
+
+        /* CTA */
+        .cta { padding: 6rem 0; }
+        .cta-box {
+            background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.08));
+            border: 1px solid rgba(108,99,255,0.25);
+            border-radius: 20px;
+            padding: 4rem;
+            text-align: center;
+        }
+        .cta-box h2 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1rem; }
+        .cta-box p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.05rem; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ANİMASYONLAR */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeInUp 0.7s ease forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.35s; }
+
+        /* MESAJLAR */
+        .alert { border-radius: 10px; border: none; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'landing' %}">Dev<span>Guide</span></a>
+        <div class="d-flex gap-2 align-items-center">
+            <a href="{% url 'giris' %}" class="nav-link nav-btn">Giriş Yap</a>
+            <a href="{% url 'kayit' %}" class="nav-link nav-btn nav-btn-primary">Kayıt Ol</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-badge fade-in">DevGuide</div>
+                <h1 class="fade-in delay-1">
+                    Yazılımı öğren,<br>
+                    <span class="highlight">mentor bul,</span><br>
+                    büyü.
+                </h1>
+                <p class="fade-in delay-2">
+                    DevGuide ile eğitim modüllerini takip et, mentor randevusu al,
+                    günlük gelişimini kaydet ve yazılım topluluğunun bir parçası ol.
+                </p>
+                <div class="hero-btns fade-in delay-3">
+                    <a href="{% url 'kayit' %}" class="btn-primary-custom">
+                        <i class="bi bi-rocket-takeoff"></i> Hemen Başla
+                    </a>
+                    <a href="{% url 'giris' %}" class="btn-outline-custom">
+                        <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="code-card fade-in delay-2">
+                    <div class="code-header">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                        <span class="code-filename">devguide/views.py</span>
+                    </div>
+                    <div class="code-line"><span class="kw">from</span> django.shortcuts <span class="kw">import</span> render</div>
+                    <div class="code-line"><span class="kw">from</span> .models <span class="kw">import</span> Profile</div>
+                    <div class="code-line">&nbsp;</div>
+                    <div class="code-line"><span class="cm"># Öğrencinin dashboard'u</span></div>
+                    <div class="code-line"><span class="kw">def</span> <span class="fn">dashboard</span>(request):</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;profile = <span class="fn">Profile.objects.get</span>(</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user=request.user</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;)</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">render</span>(request,</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">'dashboard.html'</span>,</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="str">'profile'</span>: <span class="acc">profile</span>}</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ÖZELLİKLER -->
+<section class="features">
+    <div class="container">
+        <div class="text-center">
+            <div class="section-label">ÖZELLİKLER</div>
+            <h2 class="section-title">Tek platformda her şey</h2>
+            <p class="section-sub">Yazılım öğrenme yolculuğunda ihtiyacın olan tüm araçlar</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h5>Eğitim Modülleri</h5>
+                    <p>Kendi öğrenme planını oluştur, modül ekle, ilerleme durumunu takip et.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍💻</div>
+                    <h5>Mentor Randevusu</h5>
+                    <p>Alanında uzman mentorlerle randevu al, sorularını sor, hızlı ilerle.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📓</div>
+                    <h5>Gelişim Günlüğü</h5>
+                    <p>Her gün ne öğrendiğini yaz, ilerleni gör, mentoruna paylaş.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h5>Mesajlaşma</h5>
+                    <p>Mentorlarla ve diğer öğrencilerle doğrudan mesajlaş.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h5>Mini Quiz</h5>
+                    <p>Bilgini test et, skor kazan, liderlik tablosunda yüksel.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🐙</div>
+                    <h5>GitHub Entegrasyonu</h5>
+                    <p>GitHub istatistiklerini profiline bağla, katkılarını sergile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ROL KARTLARI -->
+<section class="roles">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label">ROLLER</div>
+            <h2 class="section-title">Sen kimsin?</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="role-card">
+                    <div class="role-icon">🎓</div>
+                    <h4>Öğrenci</h4>
+                    <p>Yazılım öğrenmek ve kariyer yapmak isteyenler için</p>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Eğitim modülü oluştur ve takip et</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Mentor randevusu al</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Günlük gelişim yaz</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Quiz çöz ve sıralamaya gir</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> GitHub verilerini bağla</div>
+                    <br>
+                    <a href="{% url 'kayit' %}" class="btn-primary-custom">Öğrenci Ol</a>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="role-card mentor-card">
+                    <div class="role-icon">🧑‍🏫</div>
+                    <h4>Mentör</h4>
+                    <p>Bilgisini paylaşmak ve öğrencilere rehberlik etmek isteyenler için</p>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Randevu taleplerini yönet</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Öğrenci günlüklerini görüntüle</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Mesajlaşarak rehberlik et</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Blog yaz ve bilgi paylaş</div>
+                    <div class="role-feature"><i class="bi bi-check-circle-fill"></i> Tartışma forumuna katıl</div>
+                    <br>
+                    <a href="{% url 'kayit' %}" class="btn-outline-custom">Mentor Ol</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container">
+        <div class="cta-box">
+            <h2>Hemen başlamaya hazır mısın?</h2>
+            <p>Ücretsiz hesap oluştur, topluluğa katıl.</p>
+            <a href="{% url 'kayit' %}" class="btn-primary-custom" style="display:inline-flex;">
+                <i class="bi bi-rocket-takeoff"></i> Ücretsiz Kayıt Ol
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>Dev<strong>Guide</strong> &copy; 2026</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
